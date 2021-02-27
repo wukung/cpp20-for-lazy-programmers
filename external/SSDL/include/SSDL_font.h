@@ -1,5 +1,5 @@
 /*Simple SDL, a wrapper library for SDL.
-  
+
   Copyright (C) 2020 Will Briggs.
 
   This software is provided 'as-is', without any express or implied
@@ -34,7 +34,7 @@
 class SSDL_Font
 {
 public:
-	SSDL_Font(TTF_Font* font = NULL) : ttfFont_(NULL) 
+	SSDL_Font(TTF_Font* font = NULL) : ttfFont_(NULL)
 	{
 		ttfFont_.reset(font, TTF_CloseFont);
 	}
@@ -50,12 +50,15 @@ private:
 
 TTF_Font* SSDL_OpenFont		  (const char* filename, int point);
         //This bit all relates to where to get fonts found on the system
-        
+
 #ifdef _WIN32
 #define FONT_PATH "C:\\Windows\\Fonts\\"
 #elif __unix__
 #define FONT_PATH "/usr/share/fonts/truetype/msttcorefonts/"
-#define FEDORA_FONT_PATH "/usr/share/fonts/msttcore/"
+#define SYSTEM_FONT_PATH "/usr/share/fonts/msttcore/"
+#elif defined(__APPLE__)
+#define FONT_PATH "/Library/Fonts/"
+#define SYSTEM_FONT_PATH "/System/Library/Fonts/"
 #endif
 
 //All this does is set up the full path for a font -- used in
@@ -66,8 +69,8 @@ std::string SSDL_SystemFontPath(const char* fontPath, const char* filename);
 TTF_Font* SSDL_OpenSystemFont  (const char* filename, int point);
 
 	//What font is current?
-TTF_Font* SSDL_GetCurrentFont(); 
-void      SSDL_SetFont(TTF_Font* newFont); 
+TTF_Font* SSDL_GetCurrentFont();
+void      SSDL_SetFont(TTF_Font* newFont);
 
 	//Useful for adding (or not) ".ttf" to the end of filenames
 bool matchFromEnd(const char* str, const char* substr);

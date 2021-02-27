@@ -1,5 +1,5 @@
 /*Simple SDL, a wrapper library for SDL.
-  
+
   Copyright (C) 2020 Will Briggs.
 
   This software is provided 'as-is', without any express or implied
@@ -18,10 +18,10 @@
      misrepresented as being the original software.
   3. This notice may not be removed or altered from any source distribution. */
 
-//This is the SSDL_Display -- the screen you see when the program runs.  
+//This is the SSDL_Display -- the screen you see when the program runs.
 
 #include <exception>
-#include <cstring>  
+#include <cstring>
 #include <SDL.h>
 #include <SDL_ttf.h>
 #include <SDL_image.h>
@@ -93,10 +93,11 @@ SSDL_Display::SSDL_Display() : //background_ (0, 0, 0, 255), foreground_ (255, 2
 	currentFont_ = TTF_OpenFont(finalFilename.c_str(), point);
 #else //Unix
 	finalFilename = SSDL_SystemFontPath(FONT_PATH, filename.c_str());
+	std::cout << __FILE__ << "- Try to get the font: " << finalFilename << std::endl;
 	currentFont_ = TTF_OpenFont(finalFilename.c_str(), point);
 	if (!currentFont_)
 	{
-		finalFilename = SSDL_SystemFontPath(FEDORA_FONT_PATH, filename.c_str());
+		finalFilename = SSDL_SystemFontPath(SYSTEM_FONT_PATH, filename.c_str());
 		currentFont_ = TTF_OpenFont(finalFilename.c_str(), point);
 	}
 #endif
@@ -105,12 +106,12 @@ SSDL_Display::SSDL_Display() : //background_ (0, 0, 0, 255), foreground_ (255, 2
 	{
 		std::string errorMsg = std::string("Missing ") + filename + "; are fonts installed?";
 		setCrashMessage(errorMsg); //Redundant? Maybe. But the 3 compilers seem inconsistent in their handling of exceptions
-									//VS in debugger crashes (good) and shows you where (good) but doesn't 
+									//VS in debugger crashes (good) and shows you where (good) but doesn't
 									// call the function specified in set_terminate (bad)
 									//VS MinGW and Unix, w/o debugging, show the crash message and abort -- good.
 		throw SSDL_Exception(errorMsg.c_str());
 	}
-	
+
 	TTF_SetFontStyle(currentFont_, TTF_STYLE_BOLD);
 }
 
@@ -124,7 +125,7 @@ SSDL_Display::~SSDL_Display ()
 	//8-17-2017
 	//In Windows 10, if there is no speaker connected, you get a new sound system error every time
 	// you try to do something iwth a sound -- it won't just let it go
-	//So for now, I won't let errors get reported.  This is not optimal. 
+	//So for now, I won't let errors get reported.  This is not optimal.
 	//if (errorString[0] != '\0') //if there's an error
 	//			SDL_ShowSimpleMessageBox (SDL_MESSAGEBOX_ERROR, "SDL Error", SDL_GetError (), NULL);
 
@@ -207,7 +208,7 @@ void SSDL_Display::RenderTextLine (const char* str, int x, int y, const TTF_Font
 		throw SSDL_Exception ();
 	//If we used RenderCopyEx, we could also rotate the text, or mirror it vertically or horizontally
 	//Another time perhaps
-    SDL_DestroyTexture (textureToPrint);  
+    SDL_DestroyTexture (textureToPrint);
 	SDL_FreeSurface (surfaceToPrintOn);
 }
 
@@ -264,7 +265,7 @@ void SSDL_Display::setWindowSize(int w, int h)
 							//...actually, that's no longer sufficient. I seem
 							// to need a delay. Have filed a bug report with SDL
 							// on bugzilla 7-20-2019.
-							
+
 #ifdef __unix__
     SDL_RenderPresent(SSDL_Display::Instance());
     for (int i = 0; i < 20; ++i) //Must be 6 or more to be reliable

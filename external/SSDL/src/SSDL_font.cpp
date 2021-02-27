@@ -1,5 +1,5 @@
 /*Simple SDL, a wrapper library for SDL.
-  
+
   Copyright (C) 2020 Will Briggs.
 
   This software is provided 'as-is', without any express or implied
@@ -32,7 +32,7 @@ using namespace std;
 //All this does is set up the full path for a font
 std::string SSDL_SystemFontPath(const char* fontPath, const char* filename)
 {
-	std::string newPath(fontPath); newPath += filename; 
+	std::string newPath(fontPath); newPath += filename;
 	if (!matchFromEnd(filename, ".ttf")) newPath += ".ttf";
 	return newPath;
 }
@@ -47,10 +47,11 @@ TTF_Font* SSDL_OpenSystemFont(const char* filename, int point)
 	currentFont_ = TTF_OpenFont(finalFilename.c_str(), point);
 #else //Unix
 	finalFilename = SSDL_SystemFontPath(FONT_PATH, filename);
+	std::cout << __FILE__ << "- Try to get the font: " << finalFilename << std::endl;
 	currentFont_ = TTF_OpenFont(finalFilename.c_str(), point);
 	if (!currentFont_)
 	{
-		finalFilename = SSDL_SystemFontPath(FEDORA_FONT_PATH, filename);
+		finalFilename = SSDL_SystemFontPath(SYSTEM_FONT_PATH, filename);
 		currentFont_ = TTF_OpenFont(finalFilename.c_str(), point);
 	}
 #endif
@@ -58,7 +59,7 @@ TTF_Font* SSDL_OpenSystemFont(const char* filename, int point)
 	{
 		std::string errorMsg = std::string("Can't open font ") + filename + ".";
 		setCrashMessage(errorMsg); //Redundant? Maybe. But the 3 compilers seem inconsistent in their handling of exceptions
-								//VS in debugger crashes (good) and shows you where (good) but doesn't 
+								//VS in debugger crashes (good) and shows you where (good) but doesn't
 								// call the function specified in set_terminate (bad)
 								//VS MinGW and Unix, w/o debugging, show the crash message and abort -- good.
 		throw SSDL_Exception();
@@ -66,7 +67,7 @@ TTF_Font* SSDL_OpenSystemFont(const char* filename, int point)
 	return currentFont_;
 }
 
-bool matchFromEnd (const char* str, const char* substr) 
+bool matchFromEnd (const char* str, const char* substr)
 {
     char* strEnd    = (char*) str+strlen(str)-1;
     char* substrEnd = (char*) substr+strlen(substr)-1;
@@ -95,7 +96,7 @@ TTF_Font* SSDL_OpenFont(const char* filename, int point)
 	{
 		std::string errorMsg = std::string("Can't open font ") + filename + ".";
 		setCrashMessage(errorMsg); //Redundant? Maybe. But the 3 compilers seem inconsistent in their handling of exceptions
-								//VS in debugger crashes (good) and shows you where (good) but doesn't 
+								//VS in debugger crashes (good) and shows you where (good) but doesn't
 								// call the function specified in set_terminate (bad)
 								//VS MinGW and Unix, w/o debugging, show the crash message and abort -- good.
 		throw SSDL_Exception();

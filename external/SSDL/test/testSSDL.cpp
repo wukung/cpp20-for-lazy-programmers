@@ -1,5 +1,5 @@
 //Program to test SSDL
-//      -- adapted from the Hallowe'en candy program 
+//      -- adapted from the Hallowe'en candy program
 //         in _C++20 for Lazy Programmers_
 
 /* I am not going to test these as all I provide are wrapper functions for SDL functions:
@@ -48,7 +48,7 @@ void SSDL_PlaySoundTimed  (SSDL_Sound sound, int repeats, int duration);
 #include <cmath> //for sqrt
 #include <sstream>
 #include <cstring> //for strcmp
-#include "SSDL.h" 
+#include "SSDL.h"
 
 SSDL_SoundSystemInitializer initializer (88020, MIX_DEFAULT_FORMAT,MIX_DEFAULT_CHANNELS, 4096);
 
@@ -57,7 +57,7 @@ enum {SCREEN_WIDTH=675, SCREEN_HEIGHT=522}; //dimensions of bkgd
 
 enum {CANDY_START_HEIGHT = 15};  //where candy falls from
 
-enum {MARGIN             = 25};  //As close to the left/right edges 
+enum {MARGIN             = 25};  //As close to the left/right edges
                                  // of the screen as moving objects
                                  // are allowed to get
 
@@ -69,8 +69,8 @@ enum { CANDY_WIDTH  = 60, CANDY_HEIGHT  = 20 };
 enum { BASKET_WIDTH = 70, BASKET_HEIGHT = 90 };
 
 //how many candies you can catch or miss before winning/losing
-enum {MAX_CAUGHT         = 10,  MAX_MISSED= 10}; 
-                                 //If you change this, change 
+enum {MAX_CAUGHT         = 10,  MAX_MISSED= 10};
+                                 //If you change this, change
                                  // printInstructions too
                                  // because it specifies this
 
@@ -79,40 +79,42 @@ enum {SMALL_FONT_SIZE  = 12,
       MEDIUM_FONT_SIZE = 24,
       LARGE_FONT_SIZE  = 36};
 
-const SSDL_Font SMALL_FONT 
+const SSDL_Font SMALL_FONT
     = SSDL_OpenFont ("../test/media/Sinister-Fonts_Werewolf-Moon/Werewolf Moon.ttf",
                  SMALL_FONT_SIZE);
 const SSDL_Font MEDIUM_FONT
-    = SSDL_OpenFont ("../test/media/Sinister-Fonts_Werewolf-Moon/Werewolf Moon.ttf", 
+    = SSDL_OpenFont ("../test/media/Sinister-Fonts_Werewolf-Moon/Werewolf Moon.ttf",
                  MEDIUM_FONT_SIZE);
-const SSDL_Font LARGE_FONT 
-    = SSDL_OpenFont ("../test/media/Sinister-Fonts_Werewolf-Moon/Werewolf Moon.ttf", 
+const SSDL_Font LARGE_FONT
+    = SSDL_OpenFont ("../test/media/Sinister-Fonts_Werewolf-Moon/Werewolf Moon.ttf",
                  LARGE_FONT_SIZE);
 
 //how far our victory/defeat messages are from left side of screen
 enum { FINAL_SCREEN_MESSAGE_OFFSET_X = 40 };
 
 //background
-const SSDL_Image BKGD_IMAGE     
+const SSDL_Image BKGD_IMAGE
     = SSDL_LoadImage("../test/media/haunted-house.jpg");
 
 //sounds and music
+#if !defined(__APPLE__)
 const SSDL_Music BKGD_MUSIC
     = SSDL_LoadMUS("../test/media/159509__mistersherlock__halloween-graveyd-short.mp3");
+#endif
 const SSDL_Sound THUNK_SOUND
     = SSDL_LoadWAV("../test/media/457741__osiruswaltz__wall-bump-1.wav");
-const SSDL_Sound DROP_SOUND   
+const SSDL_Sound DROP_SOUND
     = SSDL_LoadWAV("../test/media/388284__matypresidente__water-drop-short.wav");
 
 //structs
 struct Point2D { int x_=0, y_=0; };
 
-using Vector2D = Point2D; 
+using Vector2D = Point2D;
 
 struct Object
 {
     Point2D     loc_;
-    int         rotation_      = 0; 
+    int         rotation_      = 0;
 
     Vector2D    velocity_;
     int         rotationSpeed_ = 0;
@@ -144,20 +146,20 @@ int main (int argc, char** argv)
 	SSDL_WaitKey();
 	SSDL_MinimizeWindow(); SSDL_Delay(500);
 	SSDL_RestoreWindow (); SSDL_Delay(500);
-	SSDL_MaximizeWindow(); SSDL_Delay(500); 
+	SSDL_MaximizeWindow(); SSDL_Delay(500);
 	SSDL_RestoreWindow();
 
 	////Test exception
-	try 
+	try
 	{
 		SSDL_Image img = SSDL_LoadImage("nonexistentFile.jpg");
 		sout << "Should never reach this line!\n";
 	}
-	catch (SSDL_Exception& e) 
+	catch (SSDL_Exception& e)
 	{
-		std::ostringstream os; 
-		os << e; 
-		assert(os.str() == std::string("Couldn't open nonexistentFile.jpg")); 
+		std::ostringstream os;
+		os << e;
+		assert(os.str() == std::string("Couldn't open nonexistentFile.jpg"));
 	}
 
 	//Test image
@@ -178,11 +180,12 @@ int main (int argc, char** argv)
 	SSDL_WaitMouse();
 
 	//Now some music
+#if !defined(__APPLE__)
     SSDL_VolumeMusic (int (MIX_MAX_VOLUME * 0.1));
 	assert(!SSDL_PlayingMusic());
     SSDL_PlayMusic   (BKGD_MUSIC);
 	assert(SSDL_PlayingMusic());
-	
+#endif
 	//Test drawing, SSDL_ToggleEscapeIsQuit, RenderClear using erase color
 	SSDL_SetRenderEraseColor(GREEN); SSDL_RenderClear();
 
@@ -215,7 +218,7 @@ int main (int argc, char** argv)
 	sout << "Window is near upper left of screen.\n";
 	sout << "Check out these figures : bordered circles and rects.\n";
 	sout << "Default font, GREEN background.\n";
-	sout << "Enter text. Backspace to see BLUE\n"; 
+	sout << "Enter text. Backspace to see BLUE\n";
 	sout << "Hit Esc all you want, until you enter the text.\n";
 	sout << "Music will be audible when you go on.\n>";
 
@@ -237,11 +240,11 @@ int main (int argc, char** argv)
     //final screen:  victory or defeat
     SSDL_RenderClear (BLACK);
     SSDL_HaltMusic   ();
-    
+
     if (isVictory) displayVictoryScreen ();
     else           displayDefeatScreen  ();
 
-    SSDL_RenderTextCentered("Click mouse to end", 
+    SSDL_RenderTextCentered("Click mouse to end",
                             SCREEN_WIDTH/2, BOTTOM_LINE, SMALL_FONT);
     SSDL_WaitMouse();  //Inherently tests SSDL_RenderPresent and SSDL_WaitEvent
     return 0;
@@ -253,25 +256,25 @@ void printInstructions ()
 {
     enum { LINE_HEIGHT = 40 };
     SSDL_SetRenderDrawColor (WHITE);
-    SSDL_RenderTextCentered ("Catch 10 treats in ", 
+    SSDL_RenderTextCentered ("Catch 10 treats in ",
               SCREEN_WIDTH/2,              0, MEDIUM_FONT);
     SSDL_RenderTextCentered("your basket to win",
-              SCREEN_WIDTH/2, LINE_HEIGHT   , MEDIUM_FONT); 
+              SCREEN_WIDTH/2, LINE_HEIGHT   , MEDIUM_FONT);
     SSDL_RenderTextCentered ("Miss 10 treats and",
               SCREEN_WIDTH/2, LINE_HEIGHT*3 , MEDIUM_FONT);
     SSDL_RenderTextCentered("the next treat is YOU",
               SCREEN_WIDTH/2, LINE_HEIGHT*4 , MEDIUM_FONT);
-    
+
     SSDL_RenderTextCentered ("Use arrow keys to move",
               SCREEN_WIDTH/2, LINE_HEIGHT*6 , MEDIUM_FONT);
     SSDL_RenderTextCentered("left and right",
               SCREEN_WIDTH/2, LINE_HEIGHT*7 , MEDIUM_FONT);
-    
+
     SSDL_RenderTextCentered ("Click mouse to",
               SCREEN_WIDTH/2, LINE_HEIGHT*9 , MEDIUM_FONT);
     SSDL_RenderTextCentered("toggle stats display",
               SCREEN_WIDTH/2, LINE_HEIGHT*10, MEDIUM_FONT);
-    
+
     SSDL_RenderTextCentered ("Hit any key to continue",
               SCREEN_WIDTH/2, BOTTOM_LINE,    SMALL_FONT);
 
@@ -286,24 +289,24 @@ void displayVictoryScreen ()
     SSDL_PlaySound(VICTORY_SOUND);
     static const SSDL_Image GOOD_PUMPKIN
         = SSDL_LoadImage("../test/media/goodPumpkin.png");
-    SSDL_RenderImage(GOOD_PUMPKIN, SCREEN_WIDTH / 4, 0); 
+    SSDL_RenderImage(GOOD_PUMPKIN, SCREEN_WIDTH / 4, 0);
 
     //victory message
     SSDL_SetRenderDrawColor(WHITE);
     SSDL_RenderText ("Hooah!"  ,
-                     FINAL_SCREEN_MESSAGE_OFFSET_X, SCREEN_HEIGHT/4, 
-                     LARGE_FONT); 
+                     FINAL_SCREEN_MESSAGE_OFFSET_X, SCREEN_HEIGHT/4,
+                     LARGE_FONT);
     enum { LINE_DISTANCE_Y = 96 }; //an arbitrarily chosen number...
     SSDL_RenderText ("You won!",
                      FINAL_SCREEN_MESSAGE_OFFSET_X,
                      SCREEN_HEIGHT/4+LINE_DISTANCE_Y,
-                     LARGE_FONT); 
+                     LARGE_FONT);
 }
 
 void displayDefeatScreen ()
 {
     //sound and picture
-    static const SSDL_Sound DEFEAT_SOUND 
+    static const SSDL_Sound DEFEAT_SOUND
         = SSDL_LoadWAV("../test/media/326813__mrose6__echoed-screams-short.wav");
     SSDL_PlaySound(DEFEAT_SOUND);
     static const SSDL_Image SAD_PUMPKIN
@@ -313,7 +316,7 @@ void displayDefeatScreen ()
     //defeat message
     SSDL_SetRenderDrawColor (WHITE);
     SSDL_RenderText ("Oh, no!", FINAL_SCREEN_MESSAGE_OFFSET_X,
-                     SCREEN_HEIGHT/4, LARGE_FONT); 
+                     SCREEN_HEIGHT/4, LARGE_FONT);
 }
 
 ///////////////////// Initializing /////////////////////////
@@ -390,7 +393,7 @@ void renderObjects (Object basket, Object candy, Object yumMessage,
                     bool showYumMessage)
 {
     SSDL_RenderSprite (basket.sprite_); //also calls SSDL_RenderImageEx
-    SSDL_RenderSprite ( candy.sprite_); 
+    SSDL_RenderSprite ( candy.sprite_);
     if (showYumMessage) SSDL_RenderSprite (yumMessage.sprite_);
 }
 
@@ -417,17 +420,17 @@ void renderStats(int Caught, int Missed)
 
 //////////////// Moving objects in the world ///////////////////
 
-void resetCandyPosition (Object& candy)  //When it's time to drop 
+void resetCandyPosition (Object& candy)  //When it's time to drop
                                          // another candy...
 {
     //Put it at a random X location
-    candy.loc_.x_ = MARGIN + rand() % (SCREEN_WIDTH - MARGIN); 
+    candy.loc_.x_ = MARGIN + rand() % (SCREEN_WIDTH - MARGIN);
     candy.loc_.y_ = CANDY_START_HEIGHT;    //at the top of the screen
 
     SSDL_SetSpriteLocation(candy.sprite_, candy.loc_.x_, candy.loc_.y_);
 }
 
-void moveObject(Object& object)       
+void moveObject(Object& object)
 {
     object.loc_.x_ += object.velocity_.x_; //Every frame, move object
     object.loc_.y_ += object.velocity_.y_; //  as specified
@@ -436,7 +439,7 @@ void moveObject(Object& object)
 	assert(SSDL_GetSpriteY(object.sprite_) == object.loc_.y_);
 
                                            //...and spin as specified
-    object.rotation_ += object.rotationSpeed_; 
+    object.rotation_ += object.rotationSpeed_;
     object.rotation_ %= 360;               //angle shouldn't go over 360
     SSDL_SetSpriteRotation(object.sprite_, object.rotation_);
 	assert(SSDL_GetSpriteRotation(object.sprite_) == object.rotation_);
@@ -445,8 +448,8 @@ void moveObject(Object& object)
 void moveBasket(Object& basket, int basketSpeed)
 {
     //Let user move basket with left and right arrows
-    if (SSDL_IsKeyPressed (SDLK_LEFT )) basket.loc_.x_ -= basketSpeed;  
-    if (SSDL_IsKeyPressed (SDLK_RIGHT)) basket.loc_.x_ += basketSpeed;  
+    if (SSDL_IsKeyPressed (SDLK_LEFT )) basket.loc_.x_ -= basketSpeed;
+    if (SSDL_IsKeyPressed (SDLK_RIGHT)) basket.loc_.x_ += basketSpeed;
 
     //..but don't let the user touch the sides of the screen
     if (basket.loc_.x_ < MARGIN)
@@ -475,7 +478,7 @@ bool inCollision(Point2D a, Point2D b, int aSize, int bSize)
     return (distance(a, b) < aSize/2 + bSize/2);
 }
 
-//Detect and handle collisions between basket and candy, 
+//Detect and handle collisions between basket and candy,
 // and update numberCaught
 bool handleCatchingCandy (Object basket, Object& candy, Object& yumMessage,
                           int& numberCaught)
@@ -496,14 +499,14 @@ bool handleCatchingCandy (Object basket, Object& candy, Object& yumMessage,
     else return false;
 }
 
-//Detect and handle when candy goes off bottom of screen, 
+//Detect and handle when candy goes off bottom of screen,
 // and update numberMissed
 void handleMissingCandy (Object& candy, int& numberMissed)
 {
                                  //you missed it: it went off screen
-    if (candy.loc_.y_ >= SCREEN_HEIGHT)  
+    if (candy.loc_.y_ >= SCREEN_HEIGHT)
     {
-        SSDL_PlaySound (DROP_SOUND); 
+        SSDL_PlaySound (DROP_SOUND);
 
         ++numberMissed;
 
@@ -523,7 +526,7 @@ void myEventHandler(bool& mouseClicked)
         {
         case SDL_QUIT:            SSDL_DeclareQuit(); break; //test DeclareQuit
         case SDL_KEYDOWN:         if (SSDL_IsKeyPressed(SDLK_ESCAPE)) //test IsKeyPresse
-                                      SSDL_DeclareQuit(); 
+                                      SSDL_DeclareQuit();
                                   break;
         case SDL_MOUSEBUTTONDOWN: mouseClicked = true;
         }
@@ -551,16 +554,16 @@ bool playGame ()
 
 	//Here we can test whether memory is being destructed (use debugger)
 	//Also testing using different valid font extensions
-	SSDL_SetFont(SSDL_OpenSystemFont("times.ttf", 24));
+	SSDL_SetFont(SSDL_OpenSystemFont("Verdana.ttf", 24));
 #ifdef _WIN32
 	SSDL_SetFont(SSDL_OpenSystemFont("times.TtF", 24)); //won't and shouldn't work on Unix, which is case sensitive
 #endif
 
-	SSDL_SetFramesPerSecond(50); 
+	SSDL_SetFramesPerSecond(50);
 
 	assert(!SSDL_SoundPlaying(THUNK_SOUND)); //of course it's not playing YET...
     //Main game loop
-    while (SSDL_IsNextFrame () && ! isVictory && ! isDefeat) 
+    while (SSDL_IsNextFrame () && ! isVictory && ! isDefeat)
     {
         enum {FRAMES_FOR_YUM_MESSAGE = 60};
         static int framesLeftTillYumDisappears = 0;
@@ -576,7 +579,7 @@ bool playGame ()
 		SSDL_Color tempColor(DARK_RED); assert(DARK_RED == tempColor);
 		tempColor = GREEN;              assert(GREEN == tempColor);
 
-		SSDL_SetFont(TIMES); 
+		SSDL_SetFont(TIMES);
 		SSDL_RenderTextCentered("This banner is centered and transparent dark red and in Times font", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 		SSDL_SetRenderDrawColor(BLUE);
 		SSDL_RenderText("But this is blue, left-justified, and in creepy font", 0, SCREEN_HEIGHT / 2 + 40, SMALL_FONT);
@@ -596,12 +599,12 @@ bool playGame ()
         if (handleCatchingCandy(basket, candy, yumMessage, numberCaught))
             framesLeftTillYumDisappears = FRAMES_FOR_YUM_MESSAGE;
 
-        if (numberCaught >= MAX_CAUGHT) 
-            isVictory = true; 
+        if (numberCaught >= MAX_CAUGHT)
+            isVictory = true;
         else                                  //...or did it go off screen?
         {
             handleMissingCandy (candy, numberMissed);
-            if (numberMissed >= MAX_MISSED) 
+            if (numberMissed >= MAX_MISSED)
                 isDefeat = true; //You just lost!
         }
 
